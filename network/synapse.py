@@ -26,7 +26,7 @@ class WB():
     # Synapse object instantiation
 
     def __init__(self, typ='fin'):
-        """ Initialized synapse """
+        """ Initializes synapse """
         if typ == 'pyr':        # Pyramidal, excitatory
             self.E_syn = 0.     # mV, reversal potential
             self.bt = 1./50     # 1/msec, channel closing rate

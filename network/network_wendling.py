@@ -11,6 +11,7 @@ import seaborn as sns
 import neuron
 import synapse
 
+import time
 
 #______________________________________________________________
 # Plot settings
@@ -23,22 +24,28 @@ sns.set_color_codes()
 #______________________________________________________________
 # Simulation settings
 
+# Randomization settings
+np.random.seed(200716341)
+
 # Clock settings
 start_time = 0                  # msec
 end_time = 10.                  # msec
 inter_time = 0.01               # msec
+print "Simulating %.2f ms (%d time points)" %\
+      (end_time, 
+       np.arange(start_time, end_time, inter_time).shape[0])
 
 # Network components
-# n_pyr = 4                     # number of pyramidal neurons
-# n_exc = 4                     # number of slow neurons
-# n_sin = 4                     # number of slow neurons
-# n_fin = 4                     # number of fast neurons
-# C = 4
-n_pyr = 250                     # number of pyramidal neurons
-n_exc = 135                     # number of slow neurons
-n_sin = 48                      # number of slow neurons
-n_fin = 108                     # number of fast neurons
-C = 135
+n_pyr = 4                     # number of pyramidal neurons
+n_exc = 4                     # number of slow neurons
+n_sin = 4                     # number of slow neurons
+n_fin = 4                     # number of fast neurons
+C = 4
+# n_pyr = 250                     # number of pyramidal neurons
+# n_exc = 135                     # number of slow neurons
+# n_sin = 48                      # number of slow neurons
+# n_fin = 108                     # number of fast neurons
+# C = 135
 n_neurons = n_pyr + n_exc + n_sin + n_fin   # total number of neurons in network
 
 neurons_db = []                 # list of neurons
@@ -55,6 +62,7 @@ p_syn = 1                       # percent of synaptic connections (per neuron)
 
 #______________________________________________________________________________
 # Initialize network
+time_init_neu = time.time()
 print "Initializing network..." 
 
 # Initialize neurons
@@ -82,6 +90,9 @@ for i in range(n_neurons):
     neurons_db.append(nn)
 
     # synapses_db.append(sy)
+
+print("(Running time: %0.4f seconds)" % (time.time() - time_init_neu))
+time_init_syn = time.time()
 
 
 # Generate links
@@ -141,7 +152,7 @@ df['type'] = (['pyr'] * n_pyr) + (['exc'] * n_exc) +\
 
 links_db = df[['neuron', 'type', 'links']]
 
-print links_db.to_string(index=False)
+# print links_db.to_string(index=False)
 
 
 # Initialize synapse
@@ -164,31 +175,29 @@ for pre in range(n_neurons):
 df['pre'] = df['pre'].astype(int)    
 df['post'] = df['post'].astype(int) 
 synapses_db = df[['pre', 'post', 'syn']]   
-print synapses_db.to_string(index=False)
+# print synapses_db.to_string(index=False)
+
+print("(Running time: %0.4f seconds)" % (time.time() - time_init_syn))
 
 
 #______________________________________________________________________________
 # Run simulation
+time_run = time.time()
 print "\nRunning simulation..."
 
 ti = 0
 for t in np.arange(start_time, end_time, inter_time):
-    if not ti%1000:
-        print "Time:", t, "ms"
-    else:
-        ti += 1
+    if not (t*100)%100: print "Time:", t, "ms"
 
-    # Run neurons
-    # print "neurons"
     for nn, I_syn in zip(neurons_db, I_syn_db):
         # Add stimulus
         I_rand = np.random.normal(loc=I_mu, scale=I_sigma)
-        I_app = I_rand
+        I_app = I_rand*0
         # I_app = I_rand if np.abs(t - 0.1) > 0.1 else 0 
         # I_app = 10*(t>.100) - 10*(t>.200) + 35*(t>.300) - 35*(t>.400)
 
         nn.run(t, I_syn+I_app)
-        
+
 
     # Forward pass voltage through synapses
     # print "forward"
@@ -222,7 +231,7 @@ for t in np.arange(start_time, end_time, inter_time):
         syn_mean = 0 if not psc else np.mean(psc)
         I_syn_db[post_n] = syn_mean
 
-
+print("(Running time: %0.4f seconds)" % (time.time() - time_run))
 
 #______________________________________________________________________________
 # Plot results
