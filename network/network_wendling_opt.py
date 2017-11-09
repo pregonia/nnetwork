@@ -1,5 +1,7 @@
 """
 This code implements a neuronal network.
+- Uses Wendling's model of 4 types of neurons
+- Optimized code (non-OOP)
 """
 import numpy as np
 import scipy as sp

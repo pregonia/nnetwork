@@ -10,7 +10,7 @@ import pandas as pd
 #______________________________________________________________
 # Synapse configurations
 
-g_syn = 0.1     # mS/cm^2, maximal synaptic conductance
+# g_syn = 0.1     # mS/cm^2, maximal synaptic conductance
 th_syn = 0      # mV, synaptic constant
 
 al = 12         # 1/msec, channel opening rate
@@ -32,7 +32,11 @@ def E_syn(typ):
     elif typ == 'sin': return -75.
     elif typ == 'fin': return -75.
     else: print "Error: unknown type %s." % typ
-    
+  
+def g_syn(g=None):
+    """ Returns maximal synaptic conductance (mS/cm^2) based on type """
+    return g if g else 0.1
+
 
 def bt(typ):
     """ Returns channel closing rate (1/msec) based on type """
@@ -81,9 +85,9 @@ def syn_rk4(f, t, X, V, typ, dt=0.01):
 # Synaptic functions
 #===============================================
 
-def f_I_syn(s, V, typ):
-    """ Returns the synaptic current """ 
-    return g_syn * s * (V-E_syn(typ))
+def f_I_syn(s, V, typ, g=None):
+    """ Returns the synaptic current """
+    return g_syn(g) * s * (V-E_syn(typ))
 
 def f_V_pre(V_pre):
     """
@@ -104,7 +108,7 @@ def f_dsdt(t, s, V_pre, typ):
 # Synapse simulation
 #===============================================
 
-def run(t, V_pre=0, s=0, typ='pyr'):
+def run(t, V_pre=0, s=0, typ='pyr', g=None):
     """ 
     Computes the current state of the synapse given pre-synaptic voltage
     """
@@ -113,6 +117,6 @@ def run(t, V_pre=0, s=0, typ='pyr'):
     s_ = syn_rk4(f_dsdt, t, s, V_pre, typ, dt=dt)
 
     # Compute synaptic current
-    I_syn_ = sgn(typ) * f_I_syn(s_, V_pre, typ)
+    I_syn_ = sgn(typ) * f_I_syn(s_, V_pre, typ, g)
 
     return s_, I_syn_

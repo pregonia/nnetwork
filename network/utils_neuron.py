@@ -15,8 +15,19 @@ import pandas as pd
 #______________________________________________________________
 # Neuron configurations
 
-C_m = 1.0       # membrane capacitance, uF/cm^2
 
+# Wang-Buzsaki config
+# C_m = 1.0       # membrane capacitance, uF/cm^2
+# g_Na = 35.0     # Na maximum conductances, mS/cm^2
+# g_K = 9.0       # K maximum conductances, mS/cm^2
+# g_L = 0.1       # Leak maximum conductances, mS/cm^2
+
+# E_Na = 55.0     # Na Nernst reversal potentials, mV
+# E_K = -90.0     # K Nernst reversal potentials, mV
+# E_L = -65.0     # Leak Nernst reversal potentials, mV
+
+# Own config
+C_m = 1.0       # membrane capacitance, uF/cm^2
 g_Na = 120.0    # Na maximum conductances, mS/cm^2
 g_K = 36.0      # K maximum conductances, mS/cm^2
 g_L = 0.3       # Leak maximum conductances, mS/cm^2
