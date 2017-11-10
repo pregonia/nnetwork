@@ -36,9 +36,14 @@ E_Na = 50.0     # Na Nernst reversal potentials, mV
 E_K = -77.0     # K Nernst reversal potentials, mV
 E_L = -54.387   # Leak Nernst reversal potentials, mV
 
-phi = lambda T: 1 	# temperature function; returns 1 always
 
+# Integration
 dt = 0.01       # msec, time step for RK4
+
+# Temperature
+q10_int = 1.8   # Q_10 constant for temperature (interneurons)
+
+# phi = lambda T: 1   # temperature function; returns 1 always
 
 
 #______________________________________________________________
@@ -71,34 +76,33 @@ def beta_n(V):
 # Temperature function
 #===============================================
 
-def T_phi(T):
-    """ Temperature factor Q10 """
-    return 3**((T-6.3)/10.)
+def phi(T):
+    """ Temperature factor Phi for interneurons """
+    return q10_int**((T-31)/10.)
 
 
 #===============================================
 # Ionic current functions
 #===============================================
 
-def I_Na(V, m, h, T=0):
+def I_Na(V, m, h):
     """ Sodium current """
-    ph = phi(T)
-    return g_Na * (ph*m)**3 * (ph*h) * (V - E_Na)
+    return g_Na * m**3 * h * (V - E_Na)
 
-def I_K(V, n, T=0):
+def I_K(V, n):
     """ Potassium current """
-    ph = phi(T)
-    return g_K  * (ph*n)**4 * (V - E_K)
+    return g_K  * n**4 * (V - E_K)
 
 def I_L(V):
     """ Leak current """        
     return g_L * (V - E_L)
 
-def dALLdt(t, X, I_ext):
+def dALLdt(t, X, I_ext, T=15):
     """ Calculates membrane potential & activation variables """
     V, m, h, n = X
+    ph = phi(T)
 
-    dVdt = (I_ext - I_Na(V, m, h) - I_K(V, n) - I_L(V)) / C_m
+    dVdt = ph*(I_ext - I_Na(V, m, h) - I_K(V, n) - I_L(V)) / C_m
     dmdt = alpha_m(V)*(1.0-m) - beta_m(V)*m
     dhdt = alpha_h(V)*(1.0-h) - beta_h(V)*h
     dndt = alpha_n(V)*(1.0-n) - beta_n(V)*n
@@ -109,7 +113,7 @@ def dALLdt(t, X, I_ext):
 # ODE solver for neuron
 #===============================================
 
-def neu_rk4(f, t, X, I_ext, dt=0.01):
+def neu_rk4(f, t, X, I_ext, dt=0.01, T=15):
     """ 
     Solves the ODE using 4th order Runge-Kutta 
     
@@ -120,10 +124,10 @@ def neu_rk4(f, t, X, I_ext, dt=0.01):
     I_ext: external current
     dt: time step
     """
-    k1 = f(t, X, I_ext)
-    k2 = f(t+(dt/.2), X+(np.multiply(dt,k1/.2)), I_ext)
-    k3 = f(t+(dt/.2), X+(np.multiply(dt,k2/.2)), I_ext)
-    k4 = f(t+dt, X+(np.multiply(dt,k3)), I_ext)
+    k1 = f(t, X, I_ext, T)
+    k2 = f(t+(dt/.2), X+(np.multiply(dt,k1/.2)), I_ext, T)
+    k3 = f(t+(dt/.2), X+(np.multiply(dt,k2/.2)), I_ext, T)
+    k4 = f(t+dt, X+(np.multiply(dt,k3)), I_ext, T)
     y = X + np.multiply(dt/.6, (k1 + 
                 (np.multiply(2,k2)) + 
                 (np.multiply(2,k3)) + k4))  
@@ -134,12 +138,12 @@ def neu_rk4(f, t, X, I_ext, dt=0.01):
 # Neuron simulation
 #===============================================
 
-def run(t, V, m, h, n, I_ext=0):
+def run(t, V, m, h, n, I_ext=0, T=15):
     """ 
     Computes the current state of the neuron given the external current 
     """
 
     X = np.array([V, m, h, n])
-    V_, m_, h_, n_ = neu_rk4(dALLdt, t, X, I_ext, dt=dt)
+    V_, m_, h_, n_ = neu_rk4(dALLdt, t, X, I_ext, dt=dt, T=T)
     
     return V_, m_, h_, n_

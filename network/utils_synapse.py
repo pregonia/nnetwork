@@ -15,8 +15,11 @@ th_syn = 0      # mV, synaptic constant
 
 al = 12         # 1/msec, channel opening rate
 
+# Integration
 dt = 0.01       # msec, time step for RK4
 
+# Temperature
+q10_syn = 1.8   # Q_10 constant for temperature (interneurons)
 
 #______________________________________________________________
 # Synapse functions
@@ -55,6 +58,15 @@ def sgn(typ):
     elif typ == 'fin': return -1
     else: print "Error: unknown type %s." % typ
     
+
+#===============================================
+# Temperature function
+#===============================================
+
+def phi(T):
+    """ Temperature factor Phi for interneurons """
+    return q10_syn**((T-31)/10.)
+
 
 #===============================================
 # ODE solver for neuron
@@ -108,7 +120,7 @@ def f_dsdt(t, s, V_pre, typ):
 # Synapse simulation
 #===============================================
 
-def run(t, V_pre=0, s=0, typ='pyr', g=None):
+def run(t, V_pre=0, s=0, typ='pyr', g=None, T=15):
     """ 
     Computes the current state of the synapse given pre-synaptic voltage
     """
@@ -117,6 +129,8 @@ def run(t, V_pre=0, s=0, typ='pyr', g=None):
     s_ = syn_rk4(f_dsdt, t, s, V_pre, typ, dt=dt)
 
     # Compute synaptic current
-    I_syn_ = sgn(typ) * f_I_syn(s_, V_pre, typ, g)
+    ph = phi(T)
+    print ph
+    I_syn_ = sgn(typ) * ph * f_I_syn(s_, V_pre, typ, g)
 
     return s_, I_syn_
