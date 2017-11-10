@@ -62,17 +62,17 @@ def run(g_syn_inh, g_syn_exc, T):
 
 
     # Network components
-    n_pyr = 4                       # number of pyramidal neurons
-    n_exc = 4                       # number of slow neurons
-    n_sin = 4                       # number of slow neurons
-    n_fin = 4                       # number of fast neurons
-    C = 4                           # neuron connection constant
+    # n_pyr = 4                       # number of pyramidal neurons
+    # n_exc = 4                       # number of slow neurons
+    # n_sin = 4                       # number of slow neurons
+    # n_fin = 4                       # number of fast neurons
+    # C = 4                           # neuron connection constant
 
-    # n_pyr = 250                     # number of pyramidal neurons
-    # n_exc = 135                     # number of slow neurons
-    # n_sin = 48                      # number of slow neurons
-    # n_fin = 108                     # number of fast neurons
-    # C = 135
+    n_pyr = 250                     # number of pyramidal neurons
+    n_exc = 135                     # number of slow neurons
+    n_sin = 48                      # number of slow neurons
+    n_fin = 108                     # number of fast neurons
+    C = 135
     n_neu = n_pyr + n_exc + n_sin + n_fin   # total number of neurons in network
 
     neu_typ_db = []                 # list of neurons type
