@@ -31,6 +31,7 @@ plt_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'plot
 cp = sns.color_palette("hls", 7)
 sns.set_palette(cp)
 sns.set_color_codes()
+sns.set() 
 
 
 #______________________________________________________________
@@ -45,24 +46,24 @@ def run(g_syn_inh, g_syn_exc):
 
     # Clock settings
     start_time = 0                  # msec
-    end_time = 100.                 # msec
+    end_time = 5.                 # msec
     inter_time = 0.01               # msec
     print "Simulating %.2f ms (%d time points)" %\
           (end_time, 
            np.arange(start_time, end_time, inter_time).shape[0])
 
     # Network components
-    # n_pyr = 4                       # number of pyramidal neurons
-    # n_exc = 4                       # number of slow neurons
-    # n_sin = 4                       # number of slow neurons
-    # n_fin = 4                       # number of fast neurons
-    # C = 4                           # neuron connection constant
+    n_pyr = 4                       # number of pyramidal neurons
+    n_exc = 4                       # number of slow neurons
+    n_sin = 4                       # number of slow neurons
+    n_fin = 4                       # number of fast neurons
+    C = 4                           # neuron connection constant
 
-    n_pyr = 250                     # number of pyramidal neurons
-    n_exc = 135                     # number of slow neurons
-    n_sin = 48                      # number of slow neurons
-    n_fin = 108                     # number of fast neurons
-    C = 135
+    # n_pyr = 250                     # number of pyramidal neurons
+    # n_exc = 135                     # number of slow neurons
+    # n_sin = 48                      # number of slow neurons
+    # n_fin = 108                     # number of fast neurons
+    # C = 135
     n_neu = n_pyr + n_exc + n_sin + n_fin   # total number of neurons in network
 
     neu_typ_db = []                 # list of neurons type
@@ -337,11 +338,14 @@ def run(g_syn_inh, g_syn_exc):
     x = np.arange(start_time, end_time, inter_time)
     y = lfp
 
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
+
     fig = plt.figure(figsize=(18, 4))
-    plt.title('LFP, $g_{inh}$=%.4f, $g_{exc}$=%.4f' % (g_syn_inh, g_syn_exc))
+    plt.title(r'\textbf{LFP, $g_{inh}=$%.4f, $g_{exc}=$%.4f}' % (g_syn_inh, g_syn_exc))
     plt.plot(x, y)
-    plt.ylabel('$mV$')
-    plt.xlabel('ms')
+    plt.ylabel(r'\textbf{Membrane potential} (mV)')
+    plt.xlabel(r'\textbf{Time} (ms)')
     # plt.show()
 
     f_name = 'LFP_p%d_e%d_s%d_f%d_%.2fms_gin%.4f_gex%.4f.png' %\
@@ -350,6 +354,7 @@ def run(g_syn_inh, g_syn_exc):
 
     f_path = os.path.abspath(os.path.join(plt_path, f_name))
     fig.savefig(f_path)
+    exit()
 
 
 
