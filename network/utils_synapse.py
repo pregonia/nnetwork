@@ -130,7 +130,6 @@ def run(t, V_pre=0, s=0, typ='pyr', g=None, T=15):
 
     # Compute synaptic current
     ph = phi(T)
-    print ph
     I_syn_ = sgn(typ) * ph * f_I_syn(s_, V_pre, typ, g)
 
     return s_, I_syn_

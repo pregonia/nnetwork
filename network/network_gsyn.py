@@ -46,7 +46,7 @@ def run(g_syn_inh, g_syn_exc):
 
     # Clock settings
     start_time = 0                  # msec
-    end_time = 5.                 # msec
+    end_time = 100.                 # msec
     inter_time = 0.01               # msec
     print "Simulating %.2f ms (%d time points)" %\
           (end_time, 
